@@ -118,12 +118,12 @@ class ViztoolzPlugin:
     @vidtoolz.hookimpl
     def register_commands(self, subparser):
         self.parser = create_parser(subparser)
-        self.parser.set_defaults(func=self.hello)
+        self.parser.set_defaults(func=self.run)
 
     def run(self, args):
         output = determine_output_path(args.video, args.output)
-        iret = apply_fade_effect(args.video, args.output, args.fadetype, args.duration)
-        print(f"{args.output} written.")
+        iret = apply_fade_effect(args.video, output, args.fadetype, args.duration)
+        print(f"{utput} written.")
 
     def hello(self, args):
         # this routine will be called when "vidtoolz "fade is called."
