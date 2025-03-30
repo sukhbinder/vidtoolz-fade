@@ -2,12 +2,22 @@ import vidtoolz
 import os
 import subprocess
 
+
 def get_length(filename):
-    result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
-                             "format=duration", "-of",
-                             "default=noprint_wrappers=1:nokey=1", filename],
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
+            filename,
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
     return float(result.stdout)
 
 
@@ -22,19 +32,19 @@ def determine_output_path(input_file, output_file):
         return output_file
     else:
         return os.path.join(input_dir, f"{name}_fade.mp4")
-    
-    
+
+
 def apply_fade_effect(video, output_file, fadetype="in", duration=2):
     try:
         # Check if the input file exists
         if not os.path.exists(video):
             raise FileNotFoundError(f"Input file '{video}' not found.")
 
-        starttime =0
+        starttime = 0
         if fadetype == "out":
             length = get_length(video)
             starttime = length - duration
-        
+
         afadetype = f"fade=t={fadetype}:st={starttime}:d={duration}"
         # Define the FFmpeg command
         command = [
@@ -47,7 +57,7 @@ def apply_fade_effect(video, output_file, fadetype="in", duration=2):
             "copy",
             output_file,
         ]
-        
+
         # ffmpeg -i input.mp4 -vf "fade=t=in:st=0:d=2" -c:a copy output.mp4
 
         # Execute the command
@@ -69,9 +79,12 @@ def apply_fade_effect(video, output_file, fadetype="in", duration=2):
         print(f"An unexpected error occurred: {e}")
 
     return output_file
-    
+
+
 def create_parser(subparser):
-    parser = subparser.add_parser("fade", description="Add fade in and out for a video using ffmpeg")
+    parser = subparser.add_parser(
+        "fade", description="Add fade in and out for a video using ffmpeg"
+    )
     # Add subprser arguments here.
     parser.add_argument("video", help="Path to the input video file.")
     parser.add_argument(
@@ -98,21 +111,23 @@ def create_parser(subparser):
 
 
 class ViztoolzPlugin:
-    """ Add fade in and out for a video using ffmpeg """
+    """Add fade in and out for a video using ffmpeg"""
+
     __name__ = "fade"
 
     @vidtoolz.hookimpl
     def register_commands(self, subparser):
         self.parser = create_parser(subparser)
         self.parser.set_defaults(func=self.hello)
-        
+
     def run(self, args):
         output = determine_output_path(args.video, args.output)
         iret = apply_fade_effect(args.video, args.output, args.fadetype, args.duration)
         print(f"{args.output} written.")
-    
+
     def hello(self, args):
         # this routine will be called when "vidtoolz "fade is called."
         print("Hello! This is an example ``vidtoolz`` plugin.")
+
 
 fade_plugin = ViztoolzPlugin()
