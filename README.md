@@ -24,7 +24,25 @@ vidtoolz install vidtoolz-fade
 
 type ``vid fade --help`` to get help
 
+```bash
+usage: vid fade [-h] [-f {in,out}] [-d DURATION] [-o OUTPUT] video
 
+Add fade in and out for a video using ffmpeg
+
+positional arguments:
+  video                 Path to the input video file.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f {in,out}, --fadetype {in,out}
+                        Type of fade effect to apply. Default: in
+  -d DURATION, --duration DURATION
+                        Duration of the fade effect in seconds. (Default 2)
+  -o OUTPUT, --output OUTPUT
+                        Path for the output video file. Defaults to
+                        'input_name_fade.mp4'.
+
+```
 
 ## Development
 
